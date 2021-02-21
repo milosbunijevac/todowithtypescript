@@ -1,12 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ToDo, fetchTodos } from '../actions';
+import { ToDo, fetchTodos, deleteTodo } from '../actions';
 import { StoreState } from '../reducers';
 import './App.css';
 
 interface AppProps {
     todos: ToDo[];
-    fetchTodos(): any;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    fetchTodos: Function;
+    deleteTodo: typeof deleteTodo;
 }
 class _App extends React.Component<AppProps> {
     // We need to pass in AppState and define an interface for it if we use the constructor
@@ -15,9 +17,17 @@ class _App extends React.Component<AppProps> {
         this.props.fetchTodos();
     };
 
+    onTodoClick = (id: number): void => {
+        this.props.deleteTodo(id);
+    };
+
     renderList(): JSX.Element[] {
         return this.props.todos.map((todo: ToDo) => {
-            return <div key={todo.id}>{todo.title}</div>;
+            return (
+                <div onClick={() => this.onTodoClick(todo.id)} key={todo.id}>
+                    {todo.title}
+                </div>
+            );
         });
     }
 
@@ -37,4 +47,4 @@ const mapStateToProps = (state: StoreState) => {
     };
 };
 
-export const App = connect(mapStateToProps, { fetchTodos })(_App);
+export const App = connect(mapStateToProps, { fetchTodos, deleteTodo })(_App);
